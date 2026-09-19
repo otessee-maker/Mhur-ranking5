@@ -1,0 +1,209 @@
+<!doctype html><html lang="fr"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>MHUR EU Ranking</title>
+<meta name="description" content="MHUR EU Ranking — classement compétitif européen de My Hero Ultra Rumble."/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="MHUR EU Ranking"/>
+<meta property="og:description" content="Classement compétitif européen de My Hero Ultra Rumble."/>
+<meta property="og:image" content="https://mhur-eu-ranking-goat.vercel.app/og-home.jpg"/>
+<meta property="og:url" content="https://mhur-eu-ranking-goat.vercel.app/"/>\n<meta property="og:image:secure_url" content="https://mhur-eu-ranking-goat.vercel.app/og-home.jpg"/>
+<meta property="og:image:type" content="image/jpeg"/>\n<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="Aperçu de la page d’accueil MHUR EU Ranking"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="MHUR EU Ranking"/>
+<meta name="twitter:description" content="Classement compétitif européen de My Hero Ultra Rumble."/>
+<meta name="twitter:image" content="https://mhur-eu-ranking-goat.vercel.app/og-home.jpg"/>
+<style id="top50-see-more-style">
+  .top50-hidden { display: none !important; }
+  .top50-see-more {
+    display:block; width:100%; margin:22px 0; padding:14px 20px;
+    border:1px solid rgba(255,255,255,.14); border-radius:14px;
+    background:rgba(255,255,255,.06); color:#fff; font-weight:700;
+    font-size:15px; cursor:pointer;
+  }
+  .top50-see-more:hover { background:rgba(255,255,255,.10); }
+</style>
+
+
+<style id="invisible-profile-audio">
+.profile-audio, .audio-player, audio.profile-audio, .profile-music-player,
+.profile-modal audio, .player-controls, .music-controls {
+  display:none !important;
+  visibility:hidden !important;
+  width:0 !important;
+  height:0 !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+</style>
+
+
+</head><body><div id="root"></div><script type="module" src="/src/main.jsx"></script>
+<script id="top50-see-more-script">
+(function(){
+  function initTop50(){
+    // Detect likely ranking rows/cards by their visible rank number.
+    const candidates = Array.from(document.querySelectorAll(
+      'main li, main tr, main [class*="rank"], main [class*="player"], main [class*="card"], main [class*="row"], li, tr'
+    ));
+    const ranked = [];
+    const seen = new Set();
+    candidates.forEach(el => {
+      if (seen.has(el)) return;
+      const txt=(el.innerText||'').trim();
+      const m=txt.match(/^(?:#\\s*)?(\\d{1,3})(?:\\s|$)/);
+      if(m){
+        const n=Number(m[1]);
+        if(n>=1 && n<=200) { ranked.push({el,n}); seen.add(el); }
+      }
+    });
+    // If no rows detected, leave the page untouched.
+    if(ranked.length < 51) return;
+    ranked.sort((a,b)=>a.n-b.n);
+    const unique=[];
+    const used=new Set();
+    ranked.forEach(x=>{ if(!used.has(x.n)){used.add(x.n); unique.push(x);} });
+
+    const over50=unique.filter(x=>x.n>50);
+    over50.forEach(x=>x.el.classList.add('top50-hidden'));
+
+    let btn=document.getElementById('top50-see-more');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.id='top50-see-more';
+      btn.className='top50-see-more';
+      btn.type='button';
+      btn.textContent='Voir plus';
+      const anchor=unique.find(x=>x.n===50)?.el || unique[49]?.el;
+      if(anchor && anchor.parentNode) anchor.parentNode.insertBefore(btn, anchor.nextSibling);
+    }
+    btn.onclick=function(){
+      over50.forEach(x=>x.el.classList.remove('top50-hidden'));
+      btn.remove();
+    };
+  }
+
+  // Run after dynamic rendering as well.
+  window.addEventListener('load', initTop50);
+  setTimeout(initTop50, 250);
+  setTimeout(initTop50, 1000);
+})();
+</script>
+
+
+<script id="tournoi-scroll-top-script">
+(function(){
+  function attach(){
+    const nodes = Array.from(document.querySelectorAll('a,button,[role="tab"]'));
+    nodes.forEach(el=>{
+      const label=(el.innerText||el.textContent||'').trim().toLowerCase();
+      if(label.includes('tournoi') && !el.dataset.scrollTopBound){
+        el.dataset.scrollTopBound='1';
+        el.addEventListener('click', function(){
+          setTimeout(function(){
+            window.scrollTo({top:0,left:0,behavior:'instant'});
+            document.documentElement.scrollTop=0;
+            document.body.scrollTop=0;
+          }, 0);
+          setTimeout(function(){
+            window.scrollTo({top:0,left:0,behavior:'smooth'});
+          }, 80);
+        });
+      }
+    });
+  }
+  attach();
+  window.addEventListener('load', attach);
+  new MutationObserver(attach).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<script id="top123-profile-music">
+(function(){
+  const audioByName = {
+    "Murf": [],
+    "Otes": [],
+    "Frosty": [],
+    "Blaze": []
+  };
+
+  function norm(s){ return (s||"").toLowerCase().replace(/\s+/g," ").trim(); }
+
+  function isTop123(name){
+    const n=norm(name);
+    return ["otes","frosty","blaze"].includes(n);
+  }
+
+  function findAudioInProfile(root){
+    if(!root) return null;
+    return root.querySelector("audio");
+  }
+
+  function getProfileRoot(el){
+    return el.closest(
+      '[class*="modal"], [class*="profile"], [role="dialog"], .overlay'
+    ) || document.body;
+  }
+
+  function playForName(name, root){
+    if(!isTop123(name)) return;
+    const audio=findAudioInProfile(root) || document.querySelector('audio[data-player]');
+    if(audio){
+      audio.currentTime=0;
+      audio.play().catch(()=>{});
+      window.__activeProfileAudio=audio;
+    }
+  }
+
+  function stopAudio(){
+    const a=window.__activeProfileAudio;
+    if(a){
+      a.pause();
+      try{a.currentTime=0;}catch(e){}
+      window.__activeProfileAudio=null;
+    }
+  }
+
+  // Hide every audio UI element but leave audio functional.
+  function hideAudioUI(){
+    document.querySelectorAll("audio").forEach(a=>{
+      a.classList.add("profile-audio");
+      a.setAttribute("aria-hidden","true");
+    });
+  }
+
+  // Detect clicks on profile cards/buttons and determine displayed player name.
+  document.addEventListener("click", function(e){
+    const trigger=e.target.closest(
+      '[class*="player"], [class*="card"], [class*="rank"], button, a'
+    );
+    if(!trigger) return;
+    const text=(trigger.innerText||trigger.textContent||"").trim();
+    const names=["Otes","Frosty","Blaze"];
+    const name=names.find(n=>norm(text).includes(norm(n)));
+    if(name){
+      setTimeout(()=>{
+        hideAudioUI();
+        playForName(name, getProfileRoot(trigger));
+      },100);
+    }
+  }, true);
+
+  // Stop when a close button is clicked.
+  document.addEventListener("click", function(e){
+    const el=e.target.closest('button, [role="button"], a');
+    if(!el) return;
+    const label=norm(el.getAttribute("aria-label")||el.innerText||el.textContent);
+    if(label.includes("close") || label.includes("fermer") || label==="×" || label==="x"){
+      setTimeout(stopAudio,50);
+    }
+  }, true);
+
+  const obs=new MutationObserver(function(){
+    hideAudioUI();
+  });
+  window.addEventListener("load", hideAudioUI);
+  obs.observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+</body></html>
